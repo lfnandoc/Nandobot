@@ -19,26 +19,31 @@ setInterval(async function () {
 
 
 async function GetLastMatchFromPlayer(name) {
-  var puuid = await GetPuuid(name);
-  var lastMatch = await GetLastMatchId(puuid);
-  var lastMatchStored = quickDB.get(`${name}.lastMatchId`);
+  try {
+    var puuid = await GetPuuid(name);
+    var lastMatch = await GetLastMatchId(puuid);
+    var lastMatchStored = quickDB.get(`${name}.lastMatchId`);
 
-  if (lastMatchStored == lastMatch)
-    return;
+    if (lastMatchStored == lastMatch)
+      return;
 
-  var lastMatchInfo = await GetMatchInfo(lastMatch);
-  var participantInfo = await GetParticipantData(lastMatchInfo, puuid);
+    var lastMatchInfo = await GetMatchInfo(lastMatch);
+    var participantInfo = await GetParticipantData(lastMatchInfo, puuid);
 
-  await quickDB.set(name, { lastMatchId: lastMatch });
+    await quickDB.set(name, { lastMatchId: lastMatch });
 
-  var win = participantInfo.win ? "ganhou" : "perdeu";
-  var champion = participantInfo.championName;
-  var kda = `${participantInfo.kills}/${participantInfo.deaths}/${participantInfo.assists}`
+    var win = participantInfo.win ? "ganhou" : "perdeu";
+    var champion = participantInfo.championName;
+    var kda = `${participantInfo.kills}/${participantInfo.deaths}/${participantInfo.assists}`
 
-  var message = `${name} jogou de ${champion} e ${win}! KDA: ${kda}`;
+    var message = `${name} jogou de ${champion} e ${win}! KDA: ${kda}`;
 
-  var channel = bot.channels.cache.get(channelId);
-  channel.send(message);
+    var channel = bot.channels.cache.get(channelId);
+    channel.send(message);
+  }
+  catch (exception) {
+    console.log(exception);
+  }
 }
 
 
