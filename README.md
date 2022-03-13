@@ -5,7 +5,9 @@ Every minute it fetches the last match of each player registered on the config f
 
 ![image](https://user-images.githubusercontent.com/82987034/158078207-76825d4a-57aa-4aac-9d15-a828560c9d5f.png)
 
-The configuration is done on a config.json file. You need to have your own Discord Bot token and Riot API keys to use it.
+The configuration is done on a config.json file. You need to have your own Discord Bot token and Riot API keys to use it. 
+
+Use yarn and run nandobot.js with NodeJS to host the bot.
 
 {
 	"token": "discordtoken",
