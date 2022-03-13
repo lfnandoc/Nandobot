@@ -36,6 +36,8 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
     var winColor = participantInfo.win ? "#238ce1" : "#ca2527";
     var champion = participantInfo.championName;
     var kda = `${participantInfo.kills}/${participantInfo.deaths}/${participantInfo.assists}`
+    var gameMode = lastMatchInfo.info.gameMode.replace("CLASSIC", "Normal");
+    var duration = FormatSecondsToMinutes(lastMatchInfo.info.gameDuration);
     var channel = bot.channels.cache.get(channelId);
 
     const embedMessage = new MessageEmbed()
@@ -44,8 +46,11 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
       .setDescription(`Jogou de ${champion} e ${win}!`)
       .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/${champion}.png`)
       .addFields(
-        { name: 'KDA', value: kda }
-      )
+        { name: 'KDA', value: kda, inline: true  },
+        { name: 'Duração', value: duration, inline: true  },
+        { name: 'Modo', value: gameMode, inline: true  },
+        { name: 'Dano Total', value: participantInfo.totalDamageDealt.toString(), inline: true  },
+        { name: 'Cura Total', value: participantInfo.totalHeal.toString(), inline: true })
       .setTimestamp();
 
     channel.send({ embeds: [embedMessage] });
@@ -96,3 +101,5 @@ function GetParticipantData(matchInfo, puuid) {
 
   return participant;
 }
+
+function FormatSecondsToMinutes(s) { return (s - (s %= 60)) / 60 + (9 < s ? ':' : ':0') + s }
