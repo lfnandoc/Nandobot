@@ -22,7 +22,7 @@ async function GetLastMatchFromPlayer(name) {
   try {
     var puuid = await GetPuuid(name);
     var lastMatch = await GetLastMatchId(puuid);
-    var lastMatchStored = quickDB.get(`${name}.lastMatchId`);
+    var lastMatchStored = await quickDB.get(`${name}.lastMatchId`);
 
     if (lastMatchStored == lastMatch)
       return;
@@ -30,7 +30,7 @@ async function GetLastMatchFromPlayer(name) {
     var lastMatchInfo = await GetMatchInfo(lastMatch);
     var participantInfo = await GetParticipantData(lastMatchInfo, puuid);
 
-    await quickDB.set(name, { lastMatchId: lastMatch });
+    await quickDB.set(`${name}.lastMatchId`,  lastMatch );
 
     var win = participantInfo.win ? "ganhou" : "perdeu";
     var champion = participantInfo.championName;
@@ -48,9 +48,17 @@ async function GetLastMatchFromPlayer(name) {
 
 
 async function GetPuuid(name) {
+  var puuid = await quickDB.get(`${name}.puuid`);
+  if (puuid != undefined)
+    return puuid;
+
   var uri = `https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?api_key=${riotAPIKey}`;
   const response = await axios.get(uri)
-  return response.data.puuid;
+  puuid = response.data.puuid;
+
+  await quickDB.set(`${name}.puuid`,  puuid);
+
+  return puuid;
 }
 
 async function GetLastMatchId(puuid) {
