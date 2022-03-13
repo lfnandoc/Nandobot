@@ -2,6 +2,7 @@
 node_modules.zip
 forever.txt
 json.sqlite
+config.json
 Nandobot/
 node_modules/.bin/prebuild-install
 node_modules/.bin/prebuild-install.cmd
