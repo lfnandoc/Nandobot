@@ -10,8 +10,8 @@ var checkminutes = 1, checkthe_interval = checkminutes * 60 * 1000;
 
 setInterval(async function () {
 
-  players.forEach(async function (player) {
-    await GetLastMatchFromPlayerAndSendDiscordMessage(player);
+  players.forEach(async function (player, index) {
+    setTimeout(async () => { await GetLastMatchFromPlayerAndSendDiscordMessage(player); }, 1000 * index);
   });
 
 }, checkthe_interval);
@@ -46,10 +46,10 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
       .setDescription(`Jogou de ${champion} e ${win}!`)
       .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/${champion}.png`)
       .addFields(
-        { name: 'KDA', value: kda, inline: true  },
-        { name: 'Duração', value: duration, inline: true  },
-        { name: 'Modo', value: gameMode, inline: true  },
-        { name: 'Dano Total', value: participantInfo.totalDamageDealt.toString(), inline: true  },
+        { name: 'KDA', value: kda, inline: true },
+        { name: 'Duração', value: duration, inline: true },
+        { name: 'Modo', value: gameMode, inline: true },
+        { name: 'Dano Total', value: participantInfo.totalDamageDealt.toString(), inline: true },
         { name: 'Cura Total', value: participantInfo.totalHeal.toString(), inline: true })
       .setTimestamp();
 
