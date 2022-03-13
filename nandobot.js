@@ -1,6 +1,6 @@
 const { token, channelId, riotAPIKey, players } = require('./config.json');
 const axios = require('axios')
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageEmbed } = require('discord.js');
 const quickDB = require('quick.db');
 const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES] })
 
@@ -11,14 +11,14 @@ var checkminutes = 1, checkthe_interval = checkminutes * 60 * 1000;
 setInterval(async function () {
 
   players.forEach(async function (player) {
-    await GetLastMatchFromPlayer(player);
+    await GetLastMatchFromPlayerAndSendDiscordMessage(player);
   });
 
 }, checkthe_interval);
 
 
 
-async function GetLastMatchFromPlayer(name) {
+async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
   try {
     var puuid = await GetPuuid(name);
     var lastMatch = await GetLastMatchId(puuid);
@@ -30,16 +30,25 @@ async function GetLastMatchFromPlayer(name) {
     var lastMatchInfo = await GetMatchInfo(lastMatch);
     var participantInfo = await GetParticipantData(lastMatchInfo, puuid);
 
-    await quickDB.set(`${name}.lastMatchId`,  lastMatch );
+    await quickDB.set(`${name}.lastMatchId`, lastMatch);
 
     var win = participantInfo.win ? "ganhou" : "perdeu";
+    var winColor = participantInfo.win ? "#238ce1" : "#ca2527";
     var champion = participantInfo.championName;
     var kda = `${participantInfo.kills}/${participantInfo.deaths}/${participantInfo.assists}`
-
-    var message = `${name} jogou de ${champion} e ${win}! KDA: ${kda}`;
-
     var channel = bot.channels.cache.get(channelId);
-    channel.send(message);
+
+    const embedMessage = new MessageEmbed()
+      .setColor(winColor)
+      .setTitle(name)
+      .setDescription(`Jogou de ${champion} e ${win}!`)
+      .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/${champion}.png`)
+      .addFields(
+        { name: 'KDA', value: kda }
+      )
+      .setTimestamp();
+
+    channel.send({ embeds: [embedMessage] });
   }
   catch (exception) {
     console.log(exception);
@@ -56,7 +65,7 @@ async function GetPuuid(name) {
   const response = await axios.get(uri)
   puuid = response.data.puuid;
 
-  await quickDB.set(`${name}.puuid`,  puuid);
+  await quickDB.set(`${name}.puuid`, puuid);
 
   return puuid;
 }
