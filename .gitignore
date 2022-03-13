@@ -2896,3 +2896,4 @@ node_modules/zod/LICENSE
 node_modules/zod/package.json
 node_modules/zod/README.md
 package-lock.json
+config.json
