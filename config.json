@@ -1,6 +1,0 @@
-{
-	"token": "discordtoken",
-	"channelId": "channelid",
-	"riotAPIKey": "riotapikey",
-	"players": ["Player1", "Player2"]
-}
