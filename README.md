@@ -1,7 +1,7 @@
 # Nandobot
 Nandobot is a simple discord bot that publishes the last match results of selected players on a text channel.
 
-![image](https://user-images.githubusercontent.com/82987034/158043716-f9189a15-3179-44b1-aa41-5f407abb183b.png)
+![image](https://user-images.githubusercontent.com/82987034/158074564-bb83d0ec-d734-4fd3-be4e-bf845aec0279.png)
 
 The configuration is done on a config.json file
 
