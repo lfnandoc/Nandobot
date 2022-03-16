@@ -6,7 +6,7 @@ const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOI
 
 bot.login(token);
 
-var checkminutes = 1, checkthe_interval = checkminutes * 60 * 1000;
+var checkminutes = .1, checkthe_interval = checkminutes * 60 * 1000;
 
 setInterval(async function () {
 
@@ -53,10 +53,16 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
         { name: 'Cura Total', value: participantInfo.totalHeal.toString(), inline: true })
       .setTimestamp();
 
-    channel.send({ embeds: [embedMessage] });
+    await channel.send({ embeds: [embedMessage] });
   }
   catch (exception) {
     console.log(exception);
+
+    if (exception.message.includes("403")) {     
+      var channel = bot.channels.cache.get(channelId);
+      await channel.send("API Key inválida. Bot offline.");
+      process.exit(1);
+    }
   }
 }
 
@@ -78,6 +84,7 @@ async function GetPuuid(name) {
 async function GetLastMatchId(puuid) {
   var uri = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=1&api_key=${riotAPIKey}`;
   const response = await axios.get(uri)
+
   return response.data[0];
 }
 
