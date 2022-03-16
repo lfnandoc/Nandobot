@@ -6,7 +6,7 @@ const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOI
 
 bot.login(token);
 
-var checkminutes = .1, checkthe_interval = checkminutes * 60 * 1000;
+var checkminutes = 1, checkthe_interval = checkminutes * 60 * 1000;
 
 setInterval(async function () {
 
