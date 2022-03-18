@@ -7,6 +7,7 @@ const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOI
 bot.login(token);
 
 var checkminutes = 1, checkthe_interval = checkminutes * 60 * 1000;
+var stopRequesting = false;
 
 setInterval(async function () {
 
@@ -20,6 +21,9 @@ setInterval(async function () {
 
 async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
   try {
+    if(stopRequesting)
+      return;
+
     var puuid = await GetPuuid(name);
     var lastMatch = await GetLastMatchId(puuid);
     var lastMatchStored = await quickDB.get(`${name}.lastMatchId`);
@@ -60,8 +64,8 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
 
     if (exception.message.includes("403")) {     
       var channel = bot.channels.cache.get(channelId);
-      await channel.send("API Key inválida. Bot offline.");
-      process.exit(1);
+      await channel.send("API Key inválida. Bot desativado.");
+      stopRequesting = true;
     }
   }
 }
