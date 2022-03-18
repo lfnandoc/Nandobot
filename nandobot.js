@@ -1,4 +1,4 @@
-const { token, channelId, riotAPIKey, players } = require('./config.json');
+const { token, channelId, riotAPIKey, players, gameVersion } = require('./config.json');
 const axios = require('axios')
 const { Client, Intents, MessageEmbed } = require('discord.js');
 const quickDB = require('quick.db');
@@ -21,7 +21,7 @@ setInterval(async function () {
 
 async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
   try {
-    if(stopRequesting)
+    if (stopRequesting)
       return;
 
     var puuid = await GetPuuid(name);
@@ -40,7 +40,9 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
     var winColor = participantInfo.win ? "#238ce1" : "#ca2527";
     var champion = participantInfo.championName;
     var kda = `${participantInfo.kills}/${participantInfo.deaths}/${participantInfo.assists}`
+    var mainItem = participantInfo.challenges.mythicItemUsed;
     var gameMode = lastMatchInfo.info.gameMode.replace("CLASSIC", "Normal");
+    var endTime = lastMatchInfo.info.gameEndTimestamp;
     var duration = FormatSecondsToMinutes(lastMatchInfo.info.gameDuration);
     var channel = bot.channels.cache.get(channelId);
 
@@ -48,21 +50,30 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
       .setColor(winColor)
       .setTitle(name)
       .setDescription(`Jogou de ${champion} e ${win}!`)
-      .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/12.5.1/img/champion/${champion}.png`)
+      .setThumbnail(`http://ddragon.leagueoflegends.com/cdn/${gameVersion}/img/champion/${champion}.png`)
       .addFields(
         { name: 'KDA', value: kda, inline: true },
         { name: 'Duração', value: duration, inline: true },
         { name: 'Modo', value: gameMode, inline: true },
         { name: 'Dano Total', value: participantInfo.totalDamageDealt.toString(), inline: true },
         { name: 'Cura Total', value: participantInfo.totalHeal.toString(), inline: true })
-      .setTimestamp();
+      .setTimestamp(new Date(endTime))
+      .setURL(`https://blitz.gg/lol/match/br1/${name}/${lastMatch.replace("BR1_","")}`);
+
+    if (mainItem > 0)
+      embedMessage.setFooter({ text: 'Item Mítico', iconURL: `http://ddragon.leagueoflegends.com/cdn/${gameVersion}/img/item/${mainItem}.png` });
+
+    if (gameMode == "Normal") {
+      var position = FormatStringIntoTitleCase(participantInfo.teamPosition.replace("UTILITY", "SUPORTE").replace("MIDDLE", "MID"));
+      embedMessage.addFields({ name: 'Posição', value: position, inline: true })
+    }
 
     await channel.send({ embeds: [embedMessage] });
   }
   catch (exception) {
     console.log(exception);
 
-    if (exception.message.includes("403")) {     
+    if (exception.message.includes("403")) {
       var channel = bot.channels.cache.get(channelId);
       await channel.send("API Key inválida. Bot desativado.");
       stopRequesting = true;
@@ -98,7 +109,6 @@ async function GetMatchInfo(matchId) {
   return response.data;
 }
 
-
 function GetParticipantData(matchInfo, puuid) {
   var participantIndex = matchInfo.metadata.participants.indexOf(puuid);
 
@@ -114,3 +124,7 @@ function GetParticipantData(matchInfo, puuid) {
 }
 
 function FormatSecondsToMinutes(s) { return (s - (s %= 60)) / 60 + (9 < s ? ':' : ':0') + s }
+
+function FormatStringIntoTitleCase(string) {
+  return string[0].toUpperCase() + string.slice(1).toLowerCase();
+}
