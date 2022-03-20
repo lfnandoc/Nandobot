@@ -58,7 +58,7 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
         { name: 'Dano Total', value: participantInfo.totalDamageDealt.toString(), inline: true },
         { name: 'Cura Total', value: participantInfo.totalHeal.toString(), inline: true })
       .setTimestamp(new Date(endTime))
-      .setURL(`https://blitz.gg/lol/match/br1/${name}/${lastMatch.replace("BR1_","")}`);
+      .setURL(`https://blitz.gg/lol/match/br1/${encodeURIComponent(name)}/${lastMatch.replace("BR1_","")}`);
 
     if (mainItem > 0)
       embedMessage.setFooter({ text: 'Item Mítico', iconURL: `http://ddragon.leagueoflegends.com/cdn/${gameVersion}/img/item/${mainItem}.png` });
