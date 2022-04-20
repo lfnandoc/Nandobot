@@ -1,5 +1,5 @@
 # Nandobot
-Nandobot is a simple discord bot that publishes the last match results of selected players on a text channel.
+Nandobot is a simple discord bot that publishes the last League of Legends match results of selected players on a text channel.
 
 Every minute it fetches the last match of each player registered on the config file, and if it's a new match, the following message will be sent:
 
