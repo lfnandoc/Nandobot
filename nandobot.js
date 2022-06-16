@@ -46,6 +46,8 @@ async function GetLastMatchFromPlayerAndSendDiscordMessage(name) {
     var duration = FormatSecondsToMinutes(lastMatchInfo.info.gameDuration);
     var channel = bot.channels.cache.get(channelId);
 
+    const gameVersion = (await axios.get("https://ddragon.leagueoflegends.com/api/versions.json")).data[0];
+
     const embedMessage = new MessageEmbed()
       .setColor(winColor)
       .setTitle(name)
